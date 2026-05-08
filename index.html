@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Mona Jiménez 🎶</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@300;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --rojo:     #e8172b;
+      --amarillo: #f5c518;
+      --negro:    #0a0a0a;
+      --blanco:   #f7f0e6;
+      --celeste:  #00aeef;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background-color: var(--negro);
+      font-family: 'Raleway', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── CONFETI ── */
+    .confeti { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .confeti span {
+      position:absolute; top:-20px;
+      border-radius:2px; opacity:.85;
+      animation: caer linear infinite;
+    }
+    @keyframes caer {
+      0%   { transform:translateY(0) rotate(0deg); opacity:1; }
+      100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
+    }
+
+    /* ── ESTRELLAS ── */
+    .estrellas { position:fixed; inset:0; pointer-events:none; z-index:1; }
+    .estrella {
+      position:absolute; border-radius:50%;
+      background:#fff; opacity:0;
+      animation:parpadear ease-in-out infinite;
+    }
+    @keyframes parpadear { 0%,100%{opacity:0} 50%{opacity:.7} }
+
+    /* ── AVISO AUTOPLAY ── */
+    #aviso-autoplay {
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      z-index:999;
+      background: rgba(232,23,43,.95);
+      color:#fff; padding:14px 28px; border-radius:12px;
+      font-size:.95rem; font-weight:700; letter-spacing:2px;
+      text-align:center; cursor:pointer; display:none;
+      box-shadow: 0 4px 40px rgba(232,23,43,.7);
+      animation: slidein .4s ease;
+    }
+    @keyframes slidein {
+      from { opacity:0; transform:translateX(-50%) translateY(30px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
+
+    /* ── HEADER ── */
+    header {
+      position:relative; z-index:10;
+      width:100%; text-align:center;
+      padding:48px 20px 20px;
+    }
+    .titulo-principal {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(3.5rem,10vw,8rem);
+      letter-spacing:6px; line-height:1;
+      color:var(--amarillo);
+      animation: titilar 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes titilar {
+      from { text-shadow:4px 4px 0 var(--rojo),8px 8px 0 #7a000d,0 0 40px rgba(245,197,24,.3); }
+      to   { text-shadow:4px 4px 0 var(--rojo),8px 8px 0 #7a000d,0 0 100px rgba(245,197,24,.9); }
+    }
+    .subtitulo {
+      font-weight:300; font-size:clamp(1rem,3vw,1.6rem);
+      letter-spacing:12px; text-transform:uppercase;
+      color:var(--celeste); margin-top:8px;
+    }
+    .banda {
+      display:inline-block;
+      background:var(--rojo); color:var(--blanco);
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(1.1rem,3vw,1.8rem);
+      letter-spacing:6px; padding:6px 28px; margin-top:16px;
+      clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    }
+
+    /* ── DIVISOR ── */
+    .divisor {
+      width:80%; max-width:600px; height:3px;
+      background:linear-gradient(90deg,transparent,var(--amarillo),var(--rojo),var(--celeste),transparent);
+      margin:28px auto; border-radius:99px; position:relative; z-index:10;
+    }
+
+    /* ── IMAGEN GIRATORIA ── */
+    .foto-wrapper {
+      position:relative; z-index:10;
+      display:flex; align-items:center; justify-content:center;
+      margin:10px 0 30px;
+    }
+
+    /* Aro de colores que gira */
+    .foto-aro {
+      width:clamp(240px,44vw,400px);
+      height:clamp(240px,44vw,400px);
+      border-radius:50%;
+      padding:7px;
+      background:conic-gradient(
+        var(--amarillo) 0deg,
+        var(--rojo)     90deg,
+        var(--celeste)  180deg,
+        var(--amarillo) 270deg,
+        var(--rojo)     360deg
+      );
+      animation: girarAro 6s linear infinite;
+      box-shadow:
+        0 0 40px rgba(245,197,24,.5),
+        0 0 100px rgba(232,23,43,.3);
+    }
+    @keyframes girarAro { to { transform:rotate(360deg); } }
+
+    /* Marco interior — contra-gira para quedarse quieto */
+    .foto-marco {
+      width:100%; height:100%;
+      border-radius:50%;
+      overflow:hidden;
+      border:5px solid var(--negro);
+      background:#111;
+      animation: contraGirar 6s linear infinite;
+    }
+    @keyframes contraGirar { to { transform:rotate(-360deg); } }
+
+    /* La imagen gira lentamente sobre su propio eje */
+    .foto-marco img {
+      width:100%; height:100%;
+      object-fit:cover; display:block;
+      animation: girarImagen 20s linear infinite;
+      transform-origin:center center;
+    }
+    @keyframes girarImagen { to { transform:rotate(360deg); } }
+
+
+
+    /* ── REPRODUCTOR ── */
+    .player-section {
+      position:relative; z-index:10;
+      width:90%; max-width:520px;
+      margin:0 auto 40px;
+    }
+    .player-card {
+      background:linear-gradient(135deg,#1a0a00 0%,#2a0a10 50%,#0a0a1a 100%);
+      border:1px solid rgba(245,197,24,.25);
+      border-radius:16px;
+      padding:28px 32px 24px;
+      box-shadow:0 8px 60px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .player-titulo {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.5rem; letter-spacing:4px;
+      color:var(--amarillo); text-align:center; margin-bottom:6px;
+    }
+    .player-artista {
+      font-size:.75rem; letter-spacing:5px;
+      color:rgba(0,174,239,.8); text-align:center;
+      text-transform:uppercase; margin-bottom:22px;
+    }
+
+    /* Ondas */
+    .ondas {
+      display:flex; align-items:center; justify-content:center;
+      gap:4px; height:40px; margin-bottom:20px;
+    }
+    .onda-bar {
+      width:4px; border-radius:2px;
+      background:var(--amarillo);
+      animation:onda linear infinite;
+    }
+    .onda-bar:nth-child(odd) { background:var(--rojo); }
+    .onda-bar:nth-child(3n)  { background:var(--celeste); }
+    @keyframes onda {
+      0%,100%{ transform:scaleY(.3); }
+      50%    { transform:scaleY(1);  }
+    }
+    .ondas.pausado .onda-bar { animation-play-state:paused; }
+
+    /* Barra de progreso */
+    .barra-wrap {
+      height:6px; background:rgba(255,255,255,.08);
+      border-radius:99px; margin-bottom:10px;
+      cursor:pointer; overflow:hidden;
+    }
+    .barra-fill {
+      height:100%;
+      background:linear-gradient(90deg,var(--rojo),var(--amarillo));
+      border-radius:99px; width:0%;
+      transition:width .5s linear;
+    }
+    .tiempos {
+      display:flex; justify-content:space-between;
+      font-size:.7rem; color:rgba(255,255,255,.3);
+      margin-bottom:20px; letter-spacing:1px;
+    }
+
+    /* Controles */
+    .controles {
+      display:flex; align-items:center;
+      justify-content:center; gap:20px;
+    }
+    .btn-ctrl {
+      background:none; border:none; cursor:pointer;
+      color:rgba(255,255,255,.5); font-size:1.3rem;
+      transition:color .2s,transform .15s; padding:6px;
+    }
+    .btn-ctrl:hover { color:var(--amarillo); transform:scale(1.2); }
+    .btn-play {
+      width:58px; height:58px; border-radius:50%;
+      background:linear-gradient(135deg,var(--rojo),var(--amarillo));
+      border:none; cursor:pointer; font-size:1.5rem;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--negro);
+      box-shadow:0 0 30px rgba(232,23,43,.5);
+      transition:transform .15s,box-shadow .2s;
+    }
+    .btn-play:hover { transform:scale(1.08); box-shadow:0 0 50px rgba(245,197,24,.7); }
+
+    /* Volumen */
+    .volumen-row {
+      display:flex; align-items:center; gap:10px; margin-top:18px;
+    }
+    input[type=range] {
+      -webkit-appearance:none; flex:1;
+      height:4px; background:rgba(255,255,255,.1);
+      border-radius:99px; outline:none; cursor:pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      width:14px; height:14px; border-radius:50%;
+      background:var(--amarillo); cursor:pointer;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position:relative; z-index:10;
+      text-align:center; padding:28px 20px 40px;
+      color:rgba(255,255,255,.18);
+      font-size:.75rem; letter-spacing:3px; text-transform:uppercase;
+    }
+    .notas-deco {
+      font-size:1.8rem; margin-bottom:8px;
+      letter-spacing:12px; color:rgba(245,197,24,.3);
+    }
+  </style>
+</head>
+<body>
+
+<div class="estrellas" id="estrellas"></div>
+<div class="confeti"   id="confeti"></div>
+
+<div id="aviso-autoplay" onclick="iniciarAudio()">
+  🎶 ¡TOCÁ AQUÍ PARA ESCUCHAR LA MONA! 🍷
+</div>
+
+<audio id="audio" loop></audio>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- HEADER                                  -->
+<!-- ═══════════════════════════════════════ -->
+<header>
+  <div class="titulo-principal">La Mona</div>
+  <div class="subtitulo">Jiménez</div>
+  <div class="banda">¿Quién se ha tomado todo el vino?</div>
+</header>
+
+<div class="divisor"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  IMAGEN — cambiá el src=""  acá abajo  -->
+<!-- ═══════════════════════════════════════ -->
+<div class="foto-wrapper">
+  <div class="foto-aro">
+    <div class="foto-marco">
+      <img src="mona.jpg" alt="Foto"/>
+    </div>
+  </div>
+  <div class="vinilo-centro"></div>
+</div>
+
+<div class="divisor"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- REPRODUCTOR                             -->
+<!-- ═══════════════════════════════════════ -->
+<div class="player-section">
+  <div class="player-card">
+    <div class="player-titulo">¿Quién se ha tomado todo el vino?</div>
+    <div class="player-artista">La Mona Jiménez</div>
+
+    <div class="ondas pausado" id="ondas"></div>
+
+    <div class="barra-wrap" id="barraWrap" onclick="saltarA(event)">
+      <div class="barra-fill" id="barraFill"></div>
+    </div>
+    <div class="tiempos">
+      <span id="tiempoActual">0:00</span>
+      <span id="tiempoDuracion">--:--</span>
+    </div>
+
+    <div class="controles">
+      <button class="btn-ctrl" onclick="retroceder()">⏮</button>
+      <button class="btn-play" id="btnPlay" onclick="togglePlay()">▶</button>
+      <button class="btn-ctrl" onclick="adelantar()">⏭</button>
+    </div>
+
+    <div class="volumen-row">
+      <span>🔈</span>
+      <input type="range" id="volumen" min="0" max="1" step="0.01" value="0.8"
+             oninput="audio.volume=this.value"/>
+      <span>🔊</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="notas-deco">🎶 🍷 🎸 🍷 🎶</div>
+  Cuarteto Cordobés · La Mona Jiménez<br>
+  <span style="color:rgba(232,23,43,.4)">♥ Dale que va ♥</span>
+</footer>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     URL DEL AUDIO — pegá la URL de la canción acá
+     ═══════════════════════════════════════════════ */
+  const URL_AUDIO = "https://youtu.be/0elimz3-3jg?si=FYEobicBruw4ehbG";
+
+  /* ─── Setup audio ─── */
+  const audio   = document.getElementById('audio');
+  const ondasEl = document.getElementById('ondas');
+  const btnPlay = document.getElementById('btnPlay');
+  let   playing = false;
+
+  if(URL_AUDIO) audio.src = URL_AUDIO;
+  audio.volume = 0.8;
+
+  /* ─── Confeti ─── */
+  const colores = ['#e8172b','#f5c518','#00aeef','#fff','#ff6b35','#a8ff78'];
+  for(let i=0;i<55;i++){
+    const s=document.createElement('span');
+    s.style.cssText=`left:${Math.random()*100}vw;background:${colores[i%colores.length]};width:${Math.random()*8+5}px;height:${Math.random()*12+8}px;animation-duration:${Math.random()*6+4}s;animation-delay:${Math.random()*6}s;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.getElementById('confeti').appendChild(s);
+  }
+
+  /* ─── Estrellas ─── */
+  for(let i=0;i<80;i++){
+    const e=document.createElement('div');
+    const sz=Math.random()*2.5+1;
+    e.className='estrella';
+    e.style.cssText=`left:${Math.random()*100}vw;top:${Math.random()*100}vh;width:${sz}px;height:${sz}px;animation-duration:${Math.random()*4+2}s;animation-delay:${Math.random()*5}s;`;
+    document.getElementById('estrellas').appendChild(e);
+  }
+
+  /* ─── Ondas ─── */
+  for(let i=0;i<24;i++){
+    const b=document.createElement('div');
+    b.className='onda-bar';
+    b.style.cssText=`height:${Math.floor(Math.random()*28+12)}px;animation-duration:${Math.random()*.7+.4}s;animation-delay:${Math.random()*.5}s;`;
+    ondasEl.appendChild(b);
+  }
+
+  /* ─── Controles ─── */
+  function togglePlay(){ playing ? pausar() : reproducir(); }
+
+  function reproducir(){
+    if(!audio.src){ mostrarAviso('⚠️ Poné la URL del audio en el código'); return; }
+    audio.play().then(()=>{
+      playing=true; btnPlay.textContent='⏸';
+      ondasEl.classList.remove('pausado');
+    }).catch(()=>{ mostrarAviso(); });
+  }
+  function pausar(){
+    audio.pause();
+    playing=false; btnPlay.textContent='▶';
+    ondasEl.classList.add('pausado');
+  }
+  function retroceder(){ audio.currentTime=Math.max(0,audio.currentTime-10); }
+  function adelantar() { audio.currentTime=Math.min(audio.duration||0,audio.currentTime+10); }
+  function saltarA(e){
+    if(!audio.duration) return;
+    const r=document.getElementById('barraWrap').getBoundingClientRect();
+    audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;
+  }
+
+  const fmt=s=>(!s||isNaN(s))?'--:--':Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0');
+  audio.addEventListener('timeupdate',()=>{
+    document.getElementById('barraFill').style.width=(audio.duration?(audio.currentTime/audio.duration)*100:0)+'%';
+    document.getElementById('tiempoActual').textContent=fmt(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata',()=>{
+    document.getElementById('tiempoDuracion').textContent=fmt(audio.duration);
+  });
+
+  /* ─── Autoplay ─── */
+  function iniciarAudio(){
+    document.getElementById('aviso-autoplay').style.display='none';
+    reproducir();
+  }
+  function mostrarAviso(msg){
+    const av=document.getElementById('aviso-autoplay');
+    if(msg) av.textContent=msg;
+    av.style.display='block';
+  }
+  window.addEventListener('load',()=>{
+    if(!URL_AUDIO){ mostrarAviso(); return; }
+    audio.play().then(()=>{
+      playing=true; btnPlay.textContent='⏸';
+      ondasEl.classList.remove('pausado');
+    }).catch(()=>{ document.getElementById('aviso-autoplay').style.display='block'; });
+  });
+</script>
+</body>
+</html>
+
