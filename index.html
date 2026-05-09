@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>La Mona Jiménez 🎶</title>
+  <title>El buebo de la Mona Jiménez </title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@300;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -47,17 +47,6 @@
     }
     @keyframes parpadear { 0%,100%{opacity:0} 50%{opacity:.7} }
 
-    /* ── AVISO AUTOPLAY ── */
-    #aviso-autoplay {
-      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-      z-index:999;
-      background: rgba(232,23,43,.95);
-      color:#fff; padding:14px 28px; border-radius:12px;
-      font-size:.95rem; font-weight:700; letter-spacing:2px;
-      text-align:center; cursor:pointer; display:none;
-      box-shadow: 0 4px 40px rgba(232,23,43,.7);
-      animation: slidein .4s ease;
-    }
     @keyframes slidein {
       from { opacity:0; transform:translateX(-50%) translateY(30px); }
       to   { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -266,7 +255,7 @@
 <div class="confeti"   id="confeti"></div>
 
 <div id="aviso-autoplay" onclick="iniciarAudio()">
-  🎶 ¡TOCÁ AQUÍ PARA ESCUCHAR LA MONA! 🍷
+
 </div>
 
 <audio id="audio" loop></audio>
@@ -277,7 +266,7 @@
 <header>
   <div class="titulo-principal">La Mona</div>
   <div class="subtitulo">Jiménez</div>
-  <div class="banda">¿Quién se ha tomado todo el vino?</div>
+  <div class="banda">El buebo de la mona</div>
 </header>
 
 <div class="divisor"></div>
@@ -301,7 +290,7 @@
 <!-- ═══════════════════════════════════════ -->
 <div class="player-section">
   <div class="player-card">
-    <div class="player-titulo">¿Quién se ha tomado todo el vino?</div>
+    <div class="player-titulo">el vino del buebo de la mona</div>
     <div class="player-artista">La Mona Jiménez</div>
 
     <div class="ondas pausado" id="ondas"></div>
@@ -337,9 +326,11 @@
 
 <script>
   /* ═══════════════════════════════════════════════
-     URL DEL AUDIO — pegá la URL de la canción acá
+     ARCHIVO DE AUDIO — poné el nombre del archivo
+     de audio en la misma carpeta que este HTML.
+     Ejemplo: "cancion.mp3" o "mona.ogg"
      ═══════════════════════════════════════════════ */
-  const URL_AUDIO = "https://youtu.be/0elimz3-3jg?si=FYEobicBruw4ehbG";
+  const ARCHIVO_AUDIO = "mona.mp3";
 
   /* ─── Setup audio ─── */
   const audio   = document.getElementById('audio');
@@ -347,7 +338,7 @@
   const btnPlay = document.getElementById('btnPlay');
   let   playing = false;
 
-  if(URL_AUDIO) audio.src = URL_AUDIO;
+  if(ARCHIVO_AUDIO) audio.src = ARCHIVO_AUDIO;
   audio.volume = 0.8;
 
   /* ─── Confeti ─── */
@@ -379,7 +370,7 @@
   function togglePlay(){ playing ? pausar() : reproducir(); }
 
   function reproducir(){
-    if(!audio.src){ mostrarAviso('⚠️ Poné la URL del audio en el código'); return; }
+    if(!audio.src){ mostrarAviso('⚠️ Poné el nombre del archivo de audio en el código'); return; }
     audio.play().then(()=>{
       playing=true; btnPlay.textContent='⏸';
       ondasEl.classList.remove('pausado');
@@ -418,7 +409,7 @@
     av.style.display='block';
   }
   window.addEventListener('load',()=>{
-    if(!URL_AUDIO){ mostrarAviso(); return; }
+    if(!ARCHIVO_AUDIO){ mostrarAviso(); return; }
     audio.play().then(()=>{
       playing=true; btnPlay.textContent='⏸';
       ondasEl.classList.remove('pausado');
